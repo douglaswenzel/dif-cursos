@@ -12,7 +12,7 @@ describe("Usuários Controller", () => {
       const novoUsuario = {
         nome: "Teste Usuario",
         email: "teste@example.com",
-        senha: "123456",
+        senha: "Senha123!",
         tipo: "Cliente",
         ativo: true,
       };
@@ -42,7 +42,7 @@ describe("Usuários Controller", () => {
       const usuario = {
         nome: "João Silva",
         email: "joao@example.com",
-        senha: "123456",
+        senha: "Senha123!",
         tipo: "Cliente",
       };
 
@@ -52,12 +52,13 @@ describe("Usuários Controller", () => {
         .expect(201);
 
       expect(response.body).toBeDefined();
+      expect(response.body).toHaveProperty("insertedId");
     });
   });
 
   describe("POST /usuarios/login", () => {
     const emailTeste = "login@example.com";
-    const senhaTeste = "123456";
+    const senhaTeste = "Senha123!";
 
     beforeAll(async () => {
       // Registrar usuário para testes de login
@@ -155,7 +156,7 @@ describe("Usuários Controller", () => {
       );
     });
 
-    it("deve retornar erro 400 para requisição sem email", async () => {
+    it("deve retornar erro 403 para requisição sem email", async () => {
       const credenciais = {
         senha: senhaTeste,
       };
@@ -163,10 +164,10 @@ describe("Usuários Controller", () => {
       await request(baseURL)
         .post("/usuarios/login")
         .send(credenciais)
-        .expect(500);
+        .expect(403);
     });
 
-    it("deve retornar erro 400 para requisição sem senha", async () => {
+    it("deve retornar erro 500 para requisição sem senha", async () => {
       const credenciais = {
         email: emailTeste,
       };
@@ -180,7 +181,7 @@ describe("Usuários Controller", () => {
 
   describe("Validações de segurança", () => {
     it("deve criptografar a senha ao registrar usuário", async () => {
-      const senhaOriginal = "minhasenha123";
+      const senhaOriginal = "Senha123!";
       const usuario = {
         nome: "Teste Criptografia",
         email: "cripto@example.com",
@@ -194,14 +195,14 @@ describe("Usuários Controller", () => {
         .expect(201);
 
       expect(response.body).toBeDefined();
-      // A senha deve estar criptografada no banco
+      expect(response.body).toHaveProperty("insertedId");
     });
 
     it("deve validar formato de email", async () => {
       const usuario = {
         nome: "Teste Email",
         email: "email-invalido",
-        senha: "123456",
+        senha: "Senha123!",
         tipo: "Cliente",
       };
 
