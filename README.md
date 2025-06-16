@@ -72,9 +72,48 @@ dif-cursos/                         # Raiz do projeto
 
 # Chamadas REST
 
+## Usuários
+
+### POST /api/usuarios/register
+
+Registra um novo usuário.
+
+**Body (JSON):**
+
+- `nome` (string, obrigatório): Nome do usuário
+- `email` (string, obrigatório): Email do usuário
+- `senha` (string, obrigatório): Senha do usuário
+- `ativo` (boolean, opcional): Status do usuário
+- `tipo` (string, opcional): Tipo de usuário (Cliente ou Admin)
+- `avatar` (string, opcional): URL do avatar do usuário
+
+**Resposta:**
+
+- 201: Usuário criado com sucesso
+- 400: Erro de validação
+
+### POST /api/usuarios/login
+
+Efetua login de usuário.
+
+**Body (JSON):**
+
+- `email` (string, obrigatório): Email do usuário
+- `senha` (string, obrigatório): Senha do usuário
+
+**Resposta:**
+
+- 200: Login bem-sucedido (retorna token JWT)
+- 403: Credenciais inválidas
+- 500: Erro ao efetuar login
+
+## Cursos
+
 ### GET /api/cursos
 
 Retorna todos os cursos cadastrados.
+
+**Autenticação:** Bearer Token
 
 **Resposta:**
 
@@ -85,6 +124,8 @@ Retorna todos os cursos cadastrados.
 
 Busca rápida de cursos por título, instrutor ou categoria.
 
+**Autenticação:** Bearer Token
+
 **Query Params:**
 
 - `busca` (string, opcional): termo de busca
@@ -92,11 +133,33 @@ Busca rápida de cursos por título, instrutor ou categoria.
 **Resposta:**
 
 - 200: Array de cursos encontrados
-- 500: Erro na busca rápida
+- 500: Erro na busca
+
+### GET /api/cursos/search/advanced
+
+Busca avançada de cursos com múltiplos filtros.
+
+**Autenticação:** Bearer Token
+
+**Query Params (todos opcionais):**
+
+- `minPreco` (number): Preço mínimo
+- `maxPreco` (number): Preço máximo
+- `categoria` (string): Categorias (separadas por vírgula)
+- `minDuracao` (number): Duração mínima em horas
+- `minAvaliacao` (number): Avaliação mínima (0-5)
+
+**Resposta:**
+
+- 200: Array de cursos filtrados
+- 400: Erro de validação dos filtros
+- 500: Erro na busca
 
 ### GET /api/cursos/:id
 
-Busca um curso pelo seu ID.
+Busca um curso pelo ID.
+
+**Autenticação:** Bearer Token
 
 **Params:**
 
@@ -108,50 +171,34 @@ Busca um curso pelo seu ID.
 - 404: Curso não encontrado
 - 500: Erro ao buscar curso
 
-### GET /api/cursos/search/advanced
-
-Busca avançada de cursos com múltiplos filtros.
-
-**Query Params (todos opcionais):**
-
-- `minPreco` (float): Preço mínimo
-- `maxPreco` (float): Preço máximo
-- `categoria` (string): Categoria do curso
-- `minDuracao` (float): Duração mínima (horas)
-- `minAvaliacao` (float): Avaliação mínima (0-5)
-- `tituloOuInstrutor` (string): Busca por título ou instrutor
-
-**Resposta:**
-
-- 200: Array de cursos filtrados
-- 400: Erro de validação dos filtros
-- 500: Erro na busca avançada
-
 ### POST /api/cursos
 
 Cria um novo curso.
+
+**Autenticação:** Bearer Token
 
 **Body (JSON):**
 
 - `titulo` (string, obrigatório)
 - `instrutor` (string, obrigatório)
 - `categoria` (string, obrigatório)
-- `duracao_horas` (float, obrigatório)
-- `alunos_matriculados` (int, obrigatório)
+- `duracao_horas` (number, obrigatório)
+- `alunos_matriculados` (number, obrigatório)
 - `data_lancamento` (ISO date, obrigatório)
-- `preco` (float, obrigatório)
-- `avaliacao` (float, opcional, 0-5)
+- `preco` (number, obrigatório)
 - `modulos` (array de string, obrigatório)
 
 **Resposta:**
 
-- 201: Curso criado
+- 201: Curso criado com sucesso
 - 400: Erro de validação
 - 500: Erro ao criar curso
 
 ### PUT /api/cursos/:id
 
 Atualiza um curso existente.
+
+**Autenticação:** Bearer Token
 
 **Params:**
 
@@ -162,14 +209,16 @@ Mesmos campos do POST.
 
 **Resposta:**
 
-- 200: Curso atualizado
-- 404: Curso não encontrado
+- 200: Curso atualizado com sucesso
 - 400: Erro de validação
+- 404: Curso não encontrado
 - 500: Erro ao atualizar curso
 
 ### DELETE /api/cursos/:id
 
 Remove um curso pelo ID.
+
+**Autenticação:** Bearer Token
 
 **Params:**
 
